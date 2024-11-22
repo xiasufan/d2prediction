@@ -7,7 +7,7 @@ const HomePage = () => {
     {
       name: "Dota 2",
       image: "https://i.ibb.co/dpDJZ2b/1.jpg",
-      link: "/stepper",
+      link: "/d2prediction/stepper",
     },
     { name: "Stick Fight", image: "https://i.ibb.co/X7nQxgj/2.jpg" },
     { name: "Minion Masters", image: "https://i.ibb.co/FqTvB96/3.jpg" },

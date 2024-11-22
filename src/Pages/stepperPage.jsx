@@ -6,9 +6,22 @@ import Result from "../Components/Result";
 
 const StepperPage = () => {
   const navigate = useNavigate();
-  const [gameType,setGameType] = useState('')
+  const [gameType, setGameType] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
+  const [accuracy, setAccuracy] = useState(null);
+  const [correctPredictions, setCorrectPredictions] = useState(null);
+  const [totalPredictions, setTotalPredictions] = useState(null);
+
+  const handleAccuracyChange = (
+    accuracy,
+    correctPredictions,
+    totalPredictions
+  ) => {
+    setAccuracy(accuracy);
+    setCorrectPredictions(correctPredictions);
+    setTotalPredictions(totalPredictions);
+  };
 
   // Change step based on direction or specific step
   const goToStep = (step) => {
@@ -21,17 +34,18 @@ const StepperPage = () => {
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
+        return <Preparation onGameTypeSelect={(type) => setGameType(type)} />;
+      case 2:
+        return <Prediction onAccuracyChange={handleAccuracyChange} />;
+      case 3:
+        // Pass accuracy to Result component in step 3
         return (
-          <Preparation
-            onGameTypeSelect={(type) =>
-              setGameType(type)
-            }
+          <Result
+            correctPredictions={correctPredictions}
+            totalPredictions={totalPredictions}
+            accuracy={accuracy}
           />
         );
-      case 2:
-        return <Prediction />;
-      case 3:
-        return <Result totalPredictions={50} correctPredictions={35} />;
       default:
         return <div className="bg-gray-600 p-4 rounded-lg">Step not found</div>;
     }
@@ -45,8 +59,7 @@ const StepperPage = () => {
         currentStep === step
           ? "bg-blue-500 text-white scale-110"
           : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-      }`}
-    >
+      }`}>
       {step}
     </div>
   );
@@ -56,16 +69,14 @@ const StepperPage = () => {
       {/* Back Button */}
       <button
         onClick={() => navigate("/d2prediction")}
-        className="flex items-center gap-2 text-sm text-gray-400 mb-4"
-      >
+        className="flex items-center gap-2 text-sm text-gray-400 mb-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={2}
           stroke="currentColor"
-          className="w-4 h-4"
-        >
+          className="w-4 h-4">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -92,16 +103,14 @@ const StepperPage = () => {
               disabled={currentStep === 1}
               className={`px-4 py-2 bg-gray-700 rounded-md ${
                 currentStep === 1 ? "opacity-50" : ""
-              }`}
-            >
+              }`}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={2}
                 stroke="currentColor"
-                className="w-6 h-6"
-              >
+                className="w-6 h-6">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -123,16 +132,14 @@ const StepperPage = () => {
               disabled={currentStep === 3}
               className={`px-4 py-2 bg-gray-700 rounded-md ${
                 currentStep === 3 ? "opacity-50" : ""
-              }`}
-            >
+              }`}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={2}
                 stroke="currentColor"
-                className="w-6 h-6"
-              >
+                className="w-6 h-6">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

@@ -8,7 +8,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/d2prediction" element={<HomePage />} />
-        <Route path="/stepper" element={<StepperPage />} />
+        <Route path="/d2prediction/stepper" element={<StepperPage />} />
       </Routes>
     </Router>
   );
