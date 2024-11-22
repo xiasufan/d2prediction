@@ -6,28 +6,25 @@ import Result from "../Components/Result";
 
 const StepperPage = () => {
   const navigate = useNavigate();
+  const [gameType,setGameType] = useState('')
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
 
-  const changeStep = (direction) => {
-    setCurrentStep((prev) =>
-      direction === "next"
-        ? prev === totalSteps
-          ? 1
-          : prev + 1
-        : prev > 1
-        ? prev - 1
-        : prev
-    );
+  // Change step based on direction or specific step
+  const goToStep = (step) => {
+    if (step >= 1 && step <= totalSteps) {
+      setCurrentStep(step);
+    }
   };
 
+  // Render content based on current step
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
         return (
           <Preparation
             onGameTypeSelect={(type) =>
-              console.log("Game Type Selected:", type)
+              setGameType(type)
             }
           />
         );
@@ -40,19 +37,35 @@ const StepperPage = () => {
     }
   };
 
+  // Step indicator component
+  const StepIndicator = ({ step }) => (
+    <div
+      onClick={() => goToStep(step)}
+      className={`w-8 h-8 flex items-center justify-center rounded-full font-bold cursor-pointer transition-all ${
+        currentStep === step
+          ? "bg-blue-500 text-white scale-110"
+          : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+      }`}
+    >
+      {step}
+    </div>
+  );
+
   return (
     <div className="bg-gray-900 text-white min-h-screen flex flex-col p-6">
       {/* Back Button */}
       <button
         onClick={() => navigate("/d2prediction")}
-        className="flex items-center gap-2 text-sm text-gray-400 mb-4">
+        className="flex items-center gap-2 text-sm text-gray-400 mb-4"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={2}
           stroke="currentColor"
-          className="w-4 h-4">
+          className="w-4 h-4"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -61,7 +74,7 @@ const StepperPage = () => {
         </svg>
         Back to Home
       </button>
-
+      {gameType}
       {/* Stepper Container */}
       <div className="flex flex-col flex-grow bg-gray-800 rounded-lg shadow-lg">
         {/* Header */}
@@ -75,18 +88,20 @@ const StepperPage = () => {
           <div className="flex justify-between items-center mb-6">
             {/* Previous Button */}
             <button
-              onClick={() => changeStep("prev")}
+              onClick={() => goToStep(currentStep - 1)}
               disabled={currentStep === 1}
               className={`px-4 py-2 bg-gray-700 rounded-md ${
-                currentStep === 1 ? "cursor-not-allowed opacity-50" : ""
-              }`}>
+                currentStep === 1 ? "opacity-50" : ""
+              }`}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={2}
                 stroke="currentColor"
-                className="w-6 h-6">
+                className="w-6 h-6"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -97,30 +112,27 @@ const StepperPage = () => {
 
             {/* Steps */}
             <div className="flex gap-4">
-              {Array.from({ length: totalSteps }, (_, i) => i + 1).map(
-                (step) => (
-                  <div
-                    key={step}
-                    className={`w-8 h-8 flex items-center justify-center rounded-full font-bold ${
-                      currentStep === step ? "bg-blue-500" : "bg-gray-700"
-                    }`}>
-                    {step}
-                  </div>
-                )
-              )}
+              {Array.from({ length: totalSteps }, (_, i) => (
+                <StepIndicator key={i + 1} step={i + 1} />
+              ))}
             </div>
 
             {/* Next Button */}
             <button
-              onClick={() => changeStep("next")}
-              className="px-4 py-2 bg-gray-700 rounded-md">
+              onClick={() => goToStep(currentStep + 1)}
+              disabled={currentStep === 3}
+              className={`px-4 py-2 bg-gray-700 rounded-md ${
+                currentStep === 3 ? "opacity-50" : ""
+              }`}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={2}
                 stroke="currentColor"
-                className="w-6 h-6">
+                className="w-6 h-6"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
