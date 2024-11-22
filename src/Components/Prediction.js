@@ -105,23 +105,25 @@ const Prediction = ({ onAccuracyChange }) => {
   };
 
   return (
-    <div className="flex flex-col items-center bg-gray-800 p-6 rounded-lg">
-      <h1 className="text-2xl font-bold text-white mb-4">
+    <div className="flex flex-col items-center bg-gray-800 p-4 md:p-6 rounded-lg w-full">
+      <h1 className="text-xl md:text-2xl font-bold text-white mb-4">
         Dota 2 Match Prediction
       </h1>
 
       {currentMatch ? (
         <>
-          <div className="mb-6">
+          <div className="w-full mb-6">
             <h2 className="text-lg font-semibold text-white mb-2">
               Match Details
             </h2>
-            <div className="flex gap-20">
-              <div className="w-full">
+            {/* Teams container - stack on mobile, side by side on desktop */}
+            <div className="flex flex-col md:flex-row md:gap-20">
+              {/* Radiant Team */}
+              <div className="w-full mb-6 md:mb-0">
                 <h3 className="text-md font-semibold text-white mb-2">
                   Radiant Team
                 </h3>
-                <div className="grid grid-cols-5 gap-4 w-full">
+                <div className="grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-4 w-full">
                   {currentMatch.radiant_team.map((heroId) => {
                     const hero = getHero(heroId);
                     return (
@@ -135,11 +137,13 @@ const Prediction = ({ onAccuracyChange }) => {
                   })}
                 </div>
               </div>
+
+              {/* Dire Team */}
               <div className="w-full">
                 <h3 className="text-md font-semibold text-white mb-2">
                   Dire Team
                 </h3>
-                <div className="grid grid-cols-5 gap-4 w-full">
+                <div className="grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-4 w-full">
                   {currentMatch.dire_team.map((heroId) => {
                     const hero = getHero(heroId);
                     return (
@@ -157,20 +161,20 @@ const Prediction = ({ onAccuracyChange }) => {
           </div>
 
           {predictionFeedback && (
-            <div className="mb-4 text-white text-xl">
+            <div className="mb-4 text-white text-lg md:text-xl">
               <p>{predictionFeedback}</p>
             </div>
           )}
 
           {!isPredictionMade && (
-            <div className="flex gap-20 mb-4">
+            <div className="flex gap-8 md:gap-20 mb-4">
               <button
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                className="px-3 py-2 md:px-4 md:py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm md:text-base"
                 onClick={() => handleTeamSelect("Radiant")}>
                 Radiant
               </button>
               <button
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                className="px-3 py-2 md:px-4 md:py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm md:text-base"
                 onClick={() => handleTeamSelect("Dire")}>
                 Dire
               </button>
@@ -178,14 +182,14 @@ const Prediction = ({ onAccuracyChange }) => {
           )}
 
           {isPredictionMade && (
-            <div className="flex gap-4">
+            <div className="flex flex-col md:flex-row gap-3 md:gap-4">
               <button
-                className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                className="px-3 py-2 md:px-4 md:py-2 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm md:text-base"
                 onClick={handleViewMatchDetails}>
                 View Match Details
               </button>
               <button
-                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-orange-400"
+                className="px-3 py-2 md:px-4 md:py-2 bg-gray-500 text-white rounded-md hover:bg-orange-400 text-sm md:text-base"
                 onClick={handleContinuePredicting}>
                 Continue Predicting
               </button>
