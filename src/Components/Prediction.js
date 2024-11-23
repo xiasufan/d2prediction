@@ -1,59 +1,27 @@
-import React, { useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import heroes from "../Constants/heroes";
+import React, { useState, useEffect } from "react";
+import { getHero } from "../utils/helpers";
 import HeroCard from "./HeroCard";
+import useMatches from "../hooks/useMatches";
 
 const Prediction = ({ onAccuracyChange }) => {
-  const [matches, setMatches] = useState([]);
-  const [currentMatch, setCurrentMatch] = useState(null);
-  const [lastMatchId, setLastMatchId] = useState(null);
+  const { matches, currentMatch, fetchMatches, setCurrentMatch, removeMatch } =
+    useMatches();
+
   const [predictionFeedback, setPredictionFeedback] = useState("");
   const [isPredictionMade, setIsPredictionMade] = useState(false);
-
   const [correctPredictions, setCorrectPredictions] = useState(0);
   const [totalPredictions, setTotalPredictions] = useState(0);
 
+  useEffect(() => {
+    console.log("Rendering Prediction component...");
+    console.log("Current match:", currentMatch);
+  }, [currentMatch]);
   useEffect(() => {
     if (totalPredictions > 0) {
       const accuracy = (correctPredictions / totalPredictions) * 100;
       onAccuracyChange(accuracy, correctPredictions, totalPredictions);
     }
   }, [correctPredictions, totalPredictions, onAccuracyChange]);
-
-  const fetchMatches = useCallback(async (lessThanMatchId = null) => {
-    try {
-      const url = lessThanMatchId
-        ? `https://api.opendota.com/api/publicMatches?min_rank=80&less_than_match_id=${lessThanMatchId}`
-        : `https://api.opendota.com/api/publicMatches?min_rank=80`;
-
-      const response = await axios.get(url);
-      const newMatches = response.data.slice(1);
-
-      setMatches((prevMatches) => {
-        const updatedMatches = [...prevMatches, ...newMatches];
-        return updatedMatches;
-      });
-
-      if (newMatches.length > 0) {
-        setLastMatchId(newMatches[newMatches.length - 1].match_id);
-      }
-    } catch (error) {
-      console.error("Error fetching matches:", error);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (matches.length === 0) {
-      fetchMatches();
-    } else if (!currentMatch) {
-      const randomIndex = Math.floor(Math.random() * matches.length);
-      setCurrentMatch(matches[randomIndex]);
-    }
-  }, [matches, currentMatch, fetchMatches]);
-
-  const getHero = (heroId) => {
-    return heroes.find((h) => h.id === heroId);
-  };
 
   const handleTeamSelect = (selectedTeam) => {
     if (currentMatch) {
@@ -74,25 +42,15 @@ const Prediction = ({ onAccuracyChange }) => {
   };
 
   const handleContinuePredicting = () => {
-    setMatches((prevMatches) => {
-      const remainingMatches = prevMatches.filter(
+    if (currentMatch) {
+      const nextMatch = matches.find(
         (match) => match.match_id !== currentMatch.match_id
       );
-
-      if (remainingMatches.length === 0) {
-        fetchMatches(lastMatchId);
+      if (nextMatch) {
+        setCurrentMatch(nextMatch);
       }
-
-      return remainingMatches;
-    });
-
-    if (matches.length > 0) {
-      const randomIndex = Math.floor(Math.random() * matches.length);
-      setCurrentMatch(matches[randomIndex]);
-    } else {
-      setCurrentMatch(null);
+      removeMatch(currentMatch.match_id);
     }
-
     setPredictionFeedback("");
     setIsPredictionMade(false);
   };
@@ -107,7 +65,7 @@ const Prediction = ({ onAccuracyChange }) => {
   return (
     <div className="flex flex-col items-center bg-gray-800 p-4 md:p-6 rounded-lg w-full">
       <h1 className="text-xl md:text-2xl font-bold text-white mb-4">
-        Dota 2 Match Prediction
+        Who will win?
       </h1>
 
       {currentMatch ? (
@@ -116,47 +74,12 @@ const Prediction = ({ onAccuracyChange }) => {
             <h2 className="text-lg font-semibold text-white mb-2">
               Match Details
             </h2>
-            {/* Teams container - stack on mobile, side by side on desktop */}
             <div className="flex flex-col md:flex-row md:gap-20">
-              {/* Radiant Team */}
-              <div className="w-full mb-6 md:mb-0">
-                <h3 className="text-md font-semibold text-white mb-2">
-                  Radiant Team
-                </h3>
-                <div className="grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-4 w-full">
-                  {currentMatch.radiant_team.map((heroId) => {
-                    const hero = getHero(heroId);
-                    return (
-                      <HeroCard
-                        key={hero.id}
-                        heroName={hero.name}
-                        displayName={hero.displayName}
-                        heroId={hero.id}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Dire Team */}
-              <div className="w-full">
-                <h3 className="text-md font-semibold text-white mb-2">
-                  Dire Team
-                </h3>
-                <div className="grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-4 w-full">
-                  {currentMatch.dire_team.map((heroId) => {
-                    const hero = getHero(heroId);
-                    return (
-                      <HeroCard
-                        key={hero.id}
-                        heroName={hero.name}
-                        displayName={hero.displayName}
-                        heroId={hero.id}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
+              <TeamDisplay
+                title="Radiant Team"
+                team={currentMatch.radiant_team}
+              />
+              <TeamDisplay title="Dire Team" team={currentMatch.dire_team} />
             </div>
           </div>
 
@@ -169,12 +92,12 @@ const Prediction = ({ onAccuracyChange }) => {
           {!isPredictionMade && (
             <div className="flex gap-8 md:gap-20 mb-4">
               <button
-                className="px-3 py-2 md:px-4 md:py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm md:text-base"
+                className="btn bg-blue-500 hover:bg-blue-600"
                 onClick={() => handleTeamSelect("Radiant")}>
                 Radiant
               </button>
               <button
-                className="px-3 py-2 md:px-4 md:py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm md:text-base"
+                className="btn bg-blue-500 hover:bg-blue-600"
                 onClick={() => handleTeamSelect("Dire")}>
                 Dire
               </button>
@@ -184,12 +107,12 @@ const Prediction = ({ onAccuracyChange }) => {
           {isPredictionMade && (
             <div className="flex flex-col md:flex-row gap-3 md:gap-4">
               <button
-                className="px-3 py-2 md:px-4 md:py-2 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm md:text-base"
+                className="btn bg-green-500 hover:bg-green-600"
                 onClick={handleViewMatchDetails}>
                 View Match Details
               </button>
               <button
-                className="px-3 py-2 md:px-4 md:py-2 bg-gray-500 text-white rounded-md hover:bg-orange-400 text-sm md:text-base"
+                className="btn bg-gray-500 hover:bg-orange-400"
                 onClick={handleContinuePredicting}>
                 Continue Predicting
               </button>
@@ -202,5 +125,24 @@ const Prediction = ({ onAccuracyChange }) => {
     </div>
   );
 };
+
+const TeamDisplay = ({ title, team }) => (
+  <div className="w-full">
+    <h3 className="text-md font-semibold text-white mb-2">{title}</h3>
+    <div className="grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-4 w-full">
+      {team.map((heroId) => {
+        const hero = getHero(heroId);
+        return (
+          <HeroCard
+            key={hero.id}
+            heroName={hero.name}
+            displayName={hero.displayName}
+            heroId={hero.id}
+          />
+        );
+      })}
+    </div>
+  </div>
+);
 
 export default Prediction;

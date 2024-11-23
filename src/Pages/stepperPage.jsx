@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Prediction from "../Components/Prediction";
-import Preparation from "../Components/Preparation";
-import Result from "../Components/Result";
+import Prediction from "../components/Prediction";
+import Preparation from "../components/Preparation";
+import Result from "../components/Result";
 
 const StepperPage = () => {
   const navigate = useNavigate();
