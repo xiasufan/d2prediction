@@ -12,15 +12,16 @@ const HeroCard = ({ heroName, displayName, heroId }) => {
 
   return (
     <div
-      className="bg-gray-700 rounded-lg p-4 w-32 text-center cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
+      className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600 rounded-lg p-4 w-full md:w-36 text-center cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:bg-gradient-to-r from-indigo-500 to-pink-500 border-2 border-gray-600 hover:border-indigo-400"
       onClick={handleCardClick}>
-      <img
-        src={imageSrc}
-        alt={displayName}
-        className="w-full h-auto mb-2 rounded-md"
-        style={{ objectFit: "cover" }}
-      />
-      <h3 className="text-white font-semibold">{displayName}</h3>
+      <div className="relative w-full h-32 mb-3 overflow-hidden rounded-md shadow-lg">
+        <img
+          src={imageSrc}
+          alt={displayName}
+          className="object-cover w-full h-full rounded-lg transition-transform duration-300 transform hover:scale-110"
+        />
+      </div>
+      <h3 className="text-white font-semibold text-sm mt-2">{displayName}</h3>
     </div>
   );
 };

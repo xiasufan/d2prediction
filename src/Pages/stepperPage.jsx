@@ -1,27 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Prediction from "../components/Prediction";
 import Preparation from "../components/Preparation";
 import Result from "../components/Result";
+import { MatchContext } from "../services/providers/ContextProvider";
+import { calculateAccuracy } from "../utils/helpers";
 
 const StepperPage = () => {
+  const { currentMatch, totalPredictions, correctPredictions } =
+    useContext(MatchContext);
   const navigate = useNavigate();
   const [gameType, setGameType] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
-  const [accuracy, setAccuracy] = useState(null);
-  const [correctPredictions, setCorrectPredictions] = useState(null);
-  const [totalPredictions, setTotalPredictions] = useState(null);
-
-  const handleAccuracyChange = (
-    accuracy,
-    correctPredictions,
-    totalPredictions
-  ) => {
-    setAccuracy(accuracy);
-    setCorrectPredictions(correctPredictions);
-    setTotalPredictions(totalPredictions);
-  };
 
   // Change step based on direction or specific step
   const goToStep = (step) => {
@@ -36,14 +27,14 @@ const StepperPage = () => {
       case 1:
         return <Preparation onGameTypeSelect={(type) => setGameType(type)} />;
       case 2:
-        return <Prediction onAccuracyChange={handleAccuracyChange} />;
+        return <Prediction />;
       case 3:
         // Pass accuracy to Result component in step 3
         return (
           <Result
             correctPredictions={correctPredictions}
             totalPredictions={totalPredictions}
-            accuracy={accuracy}
+            accuracy={calculateAccuracy(correctPredictions, totalPredictions)}
           />
         );
       default:
@@ -85,7 +76,7 @@ const StepperPage = () => {
         </svg>
         Back to Home
       </button>
-      {gameType}
+      {currentMatch?.match_id}
       {/* Stepper Container */}
       <div className="flex flex-col flex-grow bg-gray-800 rounded-lg shadow-lg">
         {/* Header */}
