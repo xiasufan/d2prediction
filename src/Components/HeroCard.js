@@ -12,7 +12,7 @@ const HeroCard = ({ heroName, displayName, heroId }) => {
 
   return (
     <div
-      className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600 rounded-lg p-4 w-full md:w-36 text-center cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:bg-gradient-to-r from-indigo-500 to-pink-500 border-2 border-gray-600 hover:border-indigo-400"
+      className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600 rounded-lg p-4 w-full md:w-36 text-center cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:bg-gradient-to-r border-2 border-gray-600 hover:border-indigo-400"
       onClick={handleCardClick}>
       <div className="relative w-full h-32 mb-3 overflow-hidden rounded-md shadow-lg">
         <img

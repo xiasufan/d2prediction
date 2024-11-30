@@ -36,14 +36,19 @@ const Prediction = () => {
 
   const handleContinuePredicting = () => {
     if (currentMatch) {
-      const nextMatch = matches.find(
-        (match) => match.match_id !== currentMatch.match_id
-      );
+      // Get a random match from the matches array
+      const randomIndex = Math.floor(Math.random() * matches.length);
+      const nextMatch = matches[randomIndex];
+
       if (nextMatch) {
         setCurrentMatch(nextMatch);
       }
+
+      // Remove the current match from the list
       removeMatch(currentMatch.match_id);
     }
+
+    // Reset prediction state
     setIsPredictionMade(false);
     setSelectedTeam(null); // Reset the selected team
   };
